@@ -5,4 +5,4 @@
 cd "$(dirname "$0")"
 : "${MPJ_HOME:?defina MPJ_HOME (ex.: export MPJ_HOME=~/Dependencias/mpj-v0_44)}"
 NP=$1; shift
-exec "$MPJ_HOME/bin/mpjrun.sh" -np "$NP" -dev multicore ${MPJ_JVM_OPTS:--Xmx6g} -cp build/classes dna.mpj.MpjSearch "$@"
+exec "$MPJ_HOME/bin/mpjrun.sh" -np "$NP" -dev multicore ${MPJ_JVM_OPTS:--Xmx2g} -cp build/classes dna.mpj.MpjSearch "$@"

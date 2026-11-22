@@ -30,12 +30,12 @@ public final class Methods {
                     throw new IllegalStateException("Suporte GPU não compilado (falta lib/jocl-*.jar)", e);
                 } catch (java.lang.reflect.InvocationTargetException e) {
                     Throwable cause = e.getCause();
-                    if (cause instanceof Exception ex) throw ex;
+                    if (cause instanceof Exception) throw (Exception) cause;
                     throw new RuntimeException(cause);
                 }
             default:
                 throw new IllegalArgumentException("método desconhecido: " + method
-                        + " (use seq | blocks | patterns | gpu; MPJ corre com mpjrun.sh)");
+                        + " (use seq | blocks | patterns | gpu; MPJ: comando mpj)");
         }
     }
 }

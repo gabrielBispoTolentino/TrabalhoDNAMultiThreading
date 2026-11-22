@@ -44,7 +44,39 @@ export MPJ_HOME=~/Dependencias/mpj-v0_44
 ./run.sh selftest       # 520 casos de teste aleatórios (com N, padrões de 1..40 letras, 1..64 blocos)
 ```
 
-`run.sh` usa `-Xmx4g` por omissão; altere com `JAVA_OPTS="-Xmx8g" ./run.sh ...`.
+`run.sh` e `run-mpj.sh` usam `-Xmx2g` por omissão (altere com `JAVA_OPTS=...` ou `MPJ_JVM_OPTS=...`). Com 500 MB de sequência bastam 1 GB de heap para sequencial/threads/GPU e 1,5 GB para MPJ com 4 processos (medido), por isso corre numa máquina com 4 GB de RAM.
+
+## Jar único (Windows / Linux, sem instalar nada além do Java)
+
+`./build.sh` gera também `dist/TrabalhoDNA.jar` (~1 MB), que inclui:
+
+* todas as classes do projeto e o kernel OpenCL;
+* JOCL com as bibliotecas nativas para Windows e Linux (x86_64);
+* MPJ Express 0.44 (modo multicore), arrancado por `dna.mpj.MpjLauncher`: **não é preciso instalar
+  o MPJ, definir `MPJ_HOME` nem usar o `mpjrun`**.
+
+Só é preciso **Java 17 ou superior** (`java -version`). Os comandos são iguais em Windows e Linux:
+
+```bash
+java -Xmx2g -jar TrabalhoDNA.jar selftest
+java -Xmx2g -jar TrabalhoDNA.jar generate dados.fa padroes.txt --size-mb 500 --seed 42
+java -Xmx2g -jar TrabalhoDNA.jar bench dados.fa padroes.txt --threads 1,2,4 --gpu
+java -Xmx2g -jar TrabalhoDNA.jar search blocks dados.fa padroes.txt --threads 4 --verify
+java -Xmx2g -jar TrabalhoDNA.jar mpj 4 dados.fa padroes.txt 2 res_mpj.txt --verify
+java -Xmx2g -jar TrabalhoDNA.jar server --port 5000
+java -Xmx2g -jar TrabalhoDNA.jar client blocks dados.fa padroes.txt --host localhost --port 5000
+```
+
+Notas:
+* `-Xmx2g` chega para 500 MB (medido: mínimo 1 GB para sequencial/threads/GPU e 1,5 GB para MPJ com 4 processos).
+  Sem `-Xmx`, o Java usa 1/4 da RAM, o que pode não chegar numa máquina com 4 GB.
+* Sem driver OpenCL, a GPU mostra "GPU indisponível" e tudo o resto funciona normalmente.
+* No Windows, se os acentos aparecerem trocados na consola, corra `chcp 65001` antes.
+* Como funciona o MPJ embutido: cada processo MPI é uma thread num `ThreadGroup` `SMPDevProcess` com o seu
+  próprio `ClassLoader` para `mpi.*`/`mpjdev.*` (o MPI guarda estado em campos estáticos), tal como o
+  `MulticoreStarter` do MPJ Express. Se `MPJ_HOME` não estiver definido, o launcher extrai o
+  `mpjexpress.conf` do jar para uma pasta temporária e relança a JVM com essa variável.
+* Num cluster (vários computadores) continua a ser preciso o MPJ instalado e o `mpjrun.sh -dev niodev`.
 
 ## Utilização
 

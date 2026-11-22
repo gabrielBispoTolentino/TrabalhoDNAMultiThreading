@@ -165,7 +165,7 @@ public final class MpjSearch {
                 SearchResult ref = SequentialSearch.search(seq, patterns, maxMis);
                 String d = ref.diff(result);
                 System.out.printf("Verificação contra sequencial (%.2f s): %s%n", ref.elapsedNanos / 1e9,
-                        d == null ? "IDÊNTICO ✔" : "DIFERENTE ✘ " + d);
+                        d == null ? "IDÊNTICO OK" : "DIFERENTE (ERRO) " + d);
             }
         }
         MPI.Finalize();
